@@ -1,0 +1,62 @@
+/* Fix Logo Header Position */
+#header h1 {
+    line-height: 1;
+    margin: 0;
+}
+
+#header h1 img {
+    width: 60px;
+    height: auto;
+    vertical-align: middle;
+}
+
+/* Menu Hambúrguer Cores */
+#menu {
+    background: linear-gradient(135deg, #ff5f13, #191a33);
+}
+
+#menu ul li a {
+    color: #fff;
+    border-bottom: 1px solid rgba(255, 95, 19, 0.3);
+}
+
+#menu ul li a:hover {
+    background: rgba(255, 95, 19, 0.2);
+    color: #ff5f13;
+}
+
+/* Header Background */
+#header {
+    background: linear-gradient(135deg, rgba(25, 26, 51, 0.9), rgba(255, 95, 19, 0.1));
+    backdrop-filter: blur(10px);
+}
+/* Fonte Psicodélica para UNDERNIGHT */
+#banner h2 {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    text-shadow: 
+        0 0 10px #00ff88,
+        0 0 20px #00ff88,
+        0 0 30px #00ff88;
+    letter-spacing: 3px;
+}
+/* Footer Copyright */
+#footer .footer-content {
+    text-align: center;
+    padding: 20px 0;
+}
+
+#footer .footer-content p {
+    margin: 5px 0;
+    color: #999;
+    font-size: 14px;
+}
+
+#footer .footer-content a {
+    color: #ff5f13;
+    text-decoration: none;
+}
+
+#footer .footer-content a:hover {
+    color: #00ff88;
+}
