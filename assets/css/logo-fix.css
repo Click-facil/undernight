@@ -60,3 +60,19 @@
 #footer .footer-content a:hover {
     color: #00ff88;
 }
+
+/* Floating Player CTA */
+.play-cta {
+    display: block;
+    font-size: 11px;
+    color: #ff5f13;
+    opacity: 0.8;
+    margin-top: 2px;
+    font-weight: 400;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
