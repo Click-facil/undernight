@@ -56,7 +56,7 @@
 					<section id="one" class="wrapper style1 special">
 						<div class="inner">
 							<header class="major">
-								<h2>A Essência do UnderNight</h2>
+								<h2>A Essência do Undernight</h2>
 								<p>Uma jornada sonora que transita entre as frequências orgânicas do Forest e a energia explosiva do Full On Night.</p>
 							</header>
 							<ul class="icons major">
@@ -94,12 +94,12 @@
 						<div class="inner">
 							<header class="major">
 								<h2>Diferenciais</h2>
-								<p>Por que contratar UnderNight para seu evento? Profissionalismo, qualidade e experiência em cada apresentação.</p>
+								<p>Por que contratar Undernight para seu evento? Profissionalismo, qualidade e experiência em cada apresentação.</p>
 							</header>
 							<ul class="features">
 								<li class="icon solid fa-plane">
 									<h3>Disponibilidade para Viagens</h3>
-									<p>Nacional e internacional. Pronto para levar a energia UnderNight para qualquer lugar do mundo.</p>
+									<p>Nacional e internacional. Pronto para levar a energia Undernight para qualquer lugar do mundo.</p>
 								</li>
 								<li class="icon solid fa-laptop">
 									<h3>Produção Autoral</h3>
@@ -193,9 +193,8 @@
 				</div>
 			</div>
 			<div class="track-info">
-				<span class="track-title">TechnologicalFrequency</span>
+				<span class="track-title">Technological Frequency</span>
 				<span class="artist-name">UNDERNIGHT</span>
-				<span class="play-cta">▶ Ouça agora</span>
 			</div>
 			<iframe id="soundcloud-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/matheus-ponte-980308501/technologicalfrequency&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false" style="display:none;"></iframe>
 		</div>
@@ -210,26 +209,37 @@
 			<script src="assets/js/main.js"></script>
 			<script>
 				// Floating Player com SoundCloud
-				const playBtn = document.getElementById('play-btn');
-				const playIcon = playBtn.querySelector('i');
-				const albumImage = document.getElementById('album-image');
-				const soundcloudPlayer = document.getElementById('soundcloud-player');
-				let isPlaying = false;
-
-				playBtn.addEventListener('click', function() {
-					if (!isPlaying) {
-						soundcloudPlayer.contentWindow.postMessage('{"method":"play"}', '*');
-						playIcon.className = 'fas fa-pause';
-						albumImage.classList.add('playing');
-						isPlaying = true;
-					} else {
-						soundcloudPlayer.contentWindow.postMessage('{"method":"pause"}', '*');
-						playIcon.className = 'fas fa-play';
-						albumImage.classList.remove('playing');
-						isPlaying = false;
+				function playMusic() {
+					const player = document.getElementById('soundcloud-player');
+					const floatingPlayer = document.getElementById('floating-player');
+					
+					if (player.style.display === 'none') {
+						player.style.display = 'block';
+						floatingPlayer.style.display = 'none';
 					}
+				}
+
+				// Animações de scroll
+				const observerOptions = {
+					threshold: 0.1,
+					rootMargin: '0px 0px -50px 0px'
+				};
+
+				const observer = new IntersectionObserver((entries) => {
+					entries.forEach(entry => {
+						if (entry.isIntersecting) {
+							entry.target.classList.add('animate-in');
+						}
+					});
+				}, observerOptions);
+
+				// Observar todas as seções
+				document.addEventListener('DOMContentLoaded', () => {
+					document.querySelectorAll('section, .spotlight, .features li').forEach(el => {
+						el.classList.add('animate-element');
+						observer.observe(el);
+					});
 				});
 			</script>
-
 	</body>
 </html>

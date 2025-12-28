@@ -53,12 +53,12 @@
 }
 
 #footer .footer-content a {
-    color: #ff5f13;
+    color: #1e3a8a;
     text-decoration: none;
 }
 
 #footer .footer-content a:hover {
-    color: #00ff88;
+    color: #3b82f6;
 }
 
 /* Floating Player CTA */
@@ -75,4 +75,37 @@
 @keyframes pulse {
     0%, 100% { opacity: 0.6; }
     50% { opacity: 1; }
+}
+
+/* Animações de Scroll */
+.animate-element {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-element.animate-in {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Animações específicas por tipo */
+.spotlight.animate-element {
+    transform: translateX(-50px);
+}
+
+.spotlight:nth-child(even).animate-element {
+    transform: translateX(50px);
+}
+
+.spotlight.animate-in {
+    transform: translateX(0);
+}
+
+.features li.animate-element {
+    transform: translateY(30px) scale(0.9);
+}
+
+.features li.animate-in {
+    transform: translateY(0) scale(1);
 }
