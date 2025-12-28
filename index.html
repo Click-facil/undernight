@@ -195,7 +195,7 @@
 			<div class="track-info">
 				<span class="track-title">Technological Frequency</span>
 				<span class="artist-name">UNDERNIGHT</span>
-				<span class="play-cta" onclick="playMusic()">Clique para ouvir</span>
+				<span class="play-cta">Clique para ouvir</span>
 			</div>
 			<iframe id="soundcloud-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/matheus-ponte-980308501/technologicalfrequency&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false" style="display:none;" loading="lazy"></iframe>
 		</div>
@@ -210,155 +210,91 @@
 			<script src="assets/js/main.js"></script>
 			<script src="https://w.soundcloud.com/player/api.js"></script>
 			<script>
-				// Floating Player com SoundCloud (Widget API)
+				// Floating Player com SoundCloud
 				let scWidget = null;
 				let isPlaying = false;
 				let widgetReady = false;
-				let isInitialized = false;
+				let initAttempts = 0;
 
-				function updatePlayButton() {
+				function updateUI() {
 					const playBtn = document.getElementById('play-btn');
 					const playCta = document.querySelector('.play-cta');
-					
-					if (playBtn) {
-						playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
-					}
-					
-					if (playCta) {
-						playCta.textContent = isPlaying ? 'Clique para pausar' : 'Clique para ouvir';
-						playCta.classList.remove('loading');
-					}
-					
-					// Atualiza animação do álbum
 					const albumImg = document.getElementById('album-image');
-					if (albumImg) {
-						if (isPlaying) {
-							albumImg.classList.add('playing');
-						} else {
-							albumImg.classList.remove('playing');
+					
+					if (playBtn) playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+					if (playCta) playCta.textContent = isPlaying ? 'Pausar' : 'Reproduzir';
+					if (albumImg) albumImg.classList.toggle('playing', isPlaying);
+				}
+
+				function initSoundCloud() {
+					if (widgetReady || initAttempts > 3) return;
+					initAttempts++;
+					
+					try {
+						const iframe = document.getElementById('soundcloud-player');
+						if (!iframe || !window.SC) {
+							setTimeout(initSoundCloud, 1000);
+							return;
 						}
+						
+						scWidget = SC.Widget(iframe);
+						
+						scWidget.bind(SC.Widget.Events.READY, () => {
+							widgetReady = true;
+							document.querySelector('.play-cta').textContent = 'Reproduzir';
+						});
+						
+						scWidget.bind(SC.Widget.Events.PLAY, () => {
+							isPlaying = true;
+							updateUI();
+						});
+						
+						scWidget.bind(SC.Widget.Events.PAUSE, () => {
+							isPlaying = false;
+							updateUI();
+						});
+						
+					} catch (e) {
+						console.log('Erro SoundCloud:', e);
+						setTimeout(initSoundCloud, 2000);
 					}
 				}
 
-				function initWidget() {
-					if (isInitialized) return;
-					
-					const player = document.getElementById('soundcloud-player');
-					if (!player) return;
-					
-					isInitialized = true;
-					scWidget = SC.Widget(player);
-					
-					scWidget.bind(SC.Widget.Events.READY, function() {
-						widgetReady = true;
-						console.log('SoundCloud Widget pronto');
-						
-						// Eventos de controle
-						scWidget.bind(SC.Widget.Events.PLAY, function() {
-							isPlaying = true;
-							updatePlayButton();
-						});
-						
-						scWidget.bind(SC.Widget.Events.PAUSE, function() {
-							isPlaying = false;
-							updatePlayButton();
-						});
-						
-						scWidget.bind(SC.Widget.Events.FINISH, function() {
-							isPlaying = false;
-							updatePlayButton();
-						});
-					});
-				}
-
-				function togglePlayPause() {
+				function togglePlay() {
 					if (!widgetReady) {
-						console.log('Widget não está pronto ainda');
+						document.querySelector('.play-cta').textContent = 'Carregando...';
+						initSoundCloud();
 						return;
 					}
 					
-					if (isPlaying) {
-						scWidget.pause();
-					} else {
-						scWidget.play();
+					try {
+						if (isPlaying) {
+							scWidget.pause();
+						} else {
+							scWidget.play();
+						}
+					} catch (e) {
+						// Fallback: abrir SoundCloud diretamente
+						window.open('https://soundcloud.com/matheus-ponte-980308501/technologicalfrequency', '_blank');
 					}
 				}
 
-				// Função para inicializar o player
-				function playMusic() {
-					// Feedback visual de carregamento
-					const playCta = document.querySelector('.play-cta');
-					if (playCta) {
-						playCta.textContent = 'Carregando...';
-						playCta.classList.add('loading');
-					}
+				// Eventos
+				document.addEventListener('DOMContentLoaded', () => {
+					const clickElements = ['#floating-player .album-art', '#play-btn', '.play-cta'];
 					
-					initWidget();
-					
-					// Aguarda o widget ficar pronto
-					const checkReady = setInterval(() => {
-						if (widgetReady) {
-							clearInterval(checkReady);
-							if (playCta) {
-								playCta.textContent = 'Clique para pausar';
-								playCta.classList.remove('loading');
-							}
-							togglePlayPause();
+					clickElements.forEach(selector => {
+						const el = document.querySelector(selector);
+						if (el) {
+							el.addEventListener('click', (e) => {
+								e.preventDefault();
+								togglePlay();
+							});
 						}
-					}, 100);
+					});
 					
-					// Timeout de segurança
-					setTimeout(() => {
-						clearInterval(checkReady);
-						if (playCta && playCta.classList.contains('loading')) {
-							playCta.textContent = 'Erro ao carregar';
-							playCta.classList.remove('loading');
-						}
-					}, 5000);
-				}
-
-				// Inicialização dos eventos
-				document.addEventListener('DOMContentLoaded', function() {
-					// Eventos de clique no popup
-					const albumArt = document.querySelector('#floating-player .album-art');
-					const playBtn = document.getElementById('play-btn');
-					const playCta = document.querySelector('.play-cta');
-					
-					if (albumArt) {
-						albumArt.addEventListener('click', function(e) {
-							e.preventDefault();
-							e.stopPropagation();
-							if (widgetReady) {
-								togglePlayPause();
-							} else {
-								playMusic();
-							}
-						});
-					}
-					
-					if (playBtn) {
-						playBtn.addEventListener('click', function(e) {
-							e.preventDefault();
-							e.stopPropagation();
-							if (widgetReady) {
-								togglePlayPause();
-							} else {
-								playMusic();
-							}
-						});
-					}
-					
-					if (playCta) {
-						playCta.addEventListener('click', function(e) {
-							e.preventDefault();
-							e.stopPropagation();
-							if (widgetReady) {
-								togglePlayPause();
-							} else {
-								playMusic();
-							}
-						});
-					}
+					// Inicialização automática após 2s
+					setTimeout(initSoundCloud, 2000);
 				});
 
 				// Animações de scroll
