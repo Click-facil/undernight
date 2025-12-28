@@ -4182,6 +4182,8 @@ body.landing #page-wrapper::before {
 	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 	background-image: linear-gradient(45deg, rgba(255, 0, 128, 0.1), rgba(0, 255, 204, 0.1));
 	animation: floatingGlow 3s ease-in-out infinite alternate;
+	cursor: pointer;
+	user-select: none;
 }
 
 @keyframes floatingGlow {
@@ -4214,6 +4216,7 @@ body.landing #page-wrapper::before {
 	border-radius: 50%;
 	object-fit: cover;
 	animation: rotate 20s linear infinite;
+	transition: animation-duration 0.3s ease;
 }
 
 #album-image.playing {

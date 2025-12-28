@@ -70,6 +70,18 @@
     margin-top: 2px;
     font-weight: 400;
     animation: pulse 2s infinite;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.play-cta:hover {
+    opacity: 1;
+    color: #00ffcc;
+}
+
+.play-cta.loading {
+    color: #ffff00;
+    animation: pulse 0.5s infinite;
 }
 
 @keyframes pulse {

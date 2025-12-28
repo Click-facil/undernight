@@ -195,8 +195,9 @@
 			<div class="track-info">
 				<span class="track-title">Technological Frequency</span>
 				<span class="artist-name">UNDERNIGHT</span>
+				<span class="play-cta" onclick="playMusic()">Clique para ouvir</span>
 			</div>
-			<iframe id="soundcloud-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/matheus-ponte-980308501/technologicalfrequency&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false" style="display:none;"></iframe>
+			<iframe id="soundcloud-player" width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/matheus-ponte-980308501/technologicalfrequency&color=%23ff5500&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false" style="display:none;" loading="lazy"></iframe>
 		</div>
 
 		<!-- Scripts -->
@@ -207,17 +208,158 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="https://w.soundcloud.com/player/api.js"></script>
 			<script>
-				// Floating Player com SoundCloud
-				function playMusic() {
-					const player = document.getElementById('soundcloud-player');
-					const floatingPlayer = document.getElementById('floating-player');
+				// Floating Player com SoundCloud (Widget API)
+				let scWidget = null;
+				let isPlaying = false;
+				let widgetReady = false;
+				let isInitialized = false;
+
+				function updatePlayButton() {
+					const playBtn = document.getElementById('play-btn');
+					const playCta = document.querySelector('.play-cta');
 					
-					if (player.style.display === 'none') {
-						player.style.display = 'block';
-						floatingPlayer.style.display = 'none';
+					if (playBtn) {
+						playBtn.innerHTML = isPlaying ? '<i class="fas fa-pause"></i>' : '<i class="fas fa-play"></i>';
+					}
+					
+					if (playCta) {
+						playCta.textContent = isPlaying ? 'Clique para pausar' : 'Clique para ouvir';
+						playCta.classList.remove('loading');
+					}
+					
+					// Atualiza animação do álbum
+					const albumImg = document.getElementById('album-image');
+					if (albumImg) {
+						if (isPlaying) {
+							albumImg.classList.add('playing');
+						} else {
+							albumImg.classList.remove('playing');
+						}
 					}
 				}
+
+				function initWidget() {
+					if (isInitialized) return;
+					
+					const player = document.getElementById('soundcloud-player');
+					if (!player) return;
+					
+					isInitialized = true;
+					scWidget = SC.Widget(player);
+					
+					scWidget.bind(SC.Widget.Events.READY, function() {
+						widgetReady = true;
+						console.log('SoundCloud Widget pronto');
+						
+						// Eventos de controle
+						scWidget.bind(SC.Widget.Events.PLAY, function() {
+							isPlaying = true;
+							updatePlayButton();
+						});
+						
+						scWidget.bind(SC.Widget.Events.PAUSE, function() {
+							isPlaying = false;
+							updatePlayButton();
+						});
+						
+						scWidget.bind(SC.Widget.Events.FINISH, function() {
+							isPlaying = false;
+							updatePlayButton();
+						});
+					});
+				}
+
+				function togglePlayPause() {
+					if (!widgetReady) {
+						console.log('Widget não está pronto ainda');
+						return;
+					}
+					
+					if (isPlaying) {
+						scWidget.pause();
+					} else {
+						scWidget.play();
+					}
+				}
+
+				// Função para inicializar o player
+				function playMusic() {
+					// Feedback visual de carregamento
+					const playCta = document.querySelector('.play-cta');
+					if (playCta) {
+						playCta.textContent = 'Carregando...';
+						playCta.classList.add('loading');
+					}
+					
+					initWidget();
+					
+					// Aguarda o widget ficar pronto
+					const checkReady = setInterval(() => {
+						if (widgetReady) {
+							clearInterval(checkReady);
+							if (playCta) {
+								playCta.textContent = 'Clique para pausar';
+								playCta.classList.remove('loading');
+							}
+							togglePlayPause();
+						}
+					}, 100);
+					
+					// Timeout de segurança
+					setTimeout(() => {
+						clearInterval(checkReady);
+						if (playCta && playCta.classList.contains('loading')) {
+							playCta.textContent = 'Erro ao carregar';
+							playCta.classList.remove('loading');
+						}
+					}, 5000);
+				}
+
+				// Inicialização dos eventos
+				document.addEventListener('DOMContentLoaded', function() {
+					// Eventos de clique no popup
+					const albumArt = document.querySelector('#floating-player .album-art');
+					const playBtn = document.getElementById('play-btn');
+					const playCta = document.querySelector('.play-cta');
+					
+					if (albumArt) {
+						albumArt.addEventListener('click', function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+							if (widgetReady) {
+								togglePlayPause();
+							} else {
+								playMusic();
+							}
+						});
+					}
+					
+					if (playBtn) {
+						playBtn.addEventListener('click', function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+							if (widgetReady) {
+								togglePlayPause();
+							} else {
+								playMusic();
+							}
+						});
+					}
+					
+					if (playCta) {
+						playCta.addEventListener('click', function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+							if (widgetReady) {
+								togglePlayPause();
+							} else {
+								playMusic();
+							}
+						});
+					}
+				});
 
 				// Animações de scroll
 				const observerOptions = {
